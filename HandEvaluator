@@ -1,0 +1,143 @@
+# We Will build two evaluators, One for Hold'em which can take in 7 cards and makes the best combo of 5
+# The second evaluator will be for PLO which will take in anywhere from 9-11 Cards and make the best combo
+# of 5 While explicitly using 3 Community Cards
+def StraightCheck(ranks):
+    rank = ranks << 1
+    if rank & 1<<13: # Check for the wheel possibilities
+        rank |= 1
+
+    run = rank
+    for _ in range(4): # Shift bits to the right only straights can survive
+        run &= (run>>1)
+    return run != 0
+
+def StraightScore(ranks):
+    rank = ranks << 1
+    if rank & (1 << 13):
+        rank |= 1
+
+    run = rank
+
+    for _ in range(4):
+        run &= (run >> 1)
+
+    return run.bit_length() + 2
+
+
+def EvaluateHandHE(Cards, Board):
+    cards = Cards + Board
+    freq = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    suit_mask = [0,0,0,0]
+    rank_mask = 0
+
+    for card in cards:  # make a bit board for both ranks and suits of the cards
+        rank = card % 13
+        suit = card // 13
+
+        freq[rank] += 1
+
+        suit_mask[suit] |= 1 << rank
+        rank_mask |= 1 << rank
+
+    quad_mask = 0
+    trip_mask = 0
+    pair_mask = 0
+    high_mask = 0
+
+    for r in range(13):
+        f = freq[r]
+        if f == 4:
+            quad_mask |= 1 << r
+            trip_mask |= 1 << r
+            pair_mask |= 1 << r
+            high_mask |= 1 << r
+        elif f == 3:
+            trip_mask |= 1 << r
+            pair_mask |= 1 << r
+            high_mask |= 1 << r
+        elif f == 2:
+            pair_mask |= 1 << r
+            high_mask |= 1 << r
+        elif f == 1:
+            high_mask |= 1 << r
+
+    flush_value = 0
+    for suit in suit_mask: # Check if there are 5 cards of the same suit in any of the suits.
+        if  suit.bit_count() >= 5:
+            flush = True
+            flush_value = suit
+            break
+        flush = False
+
+    straight = StraightCheck(rank_mask)
+
+    strflush = StraightCheck(flush_value)
+
+    if strflush:
+        return 9, StraightScore(flush_value)
+
+    if quad_mask.bit_count() == 1:  # QUADS
+        high_mask &= ~quad_mask
+        kick = high_mask.bit_length() - 1
+        return 8, quad_mask, kick
+
+    if trip_mask.bit_count() >= 1 and pair_mask.bit_count() >= 1: # Full House
+        trips = trip_mask.bit_length() - 1
+        pair_mask &= ~(1 << trips)
+        pair = pair_mask.bit_length() - 1
+        return 7, trips, pair
+
+    if flush: # Get Flush Score (Good For Now)
+        kickers = []
+
+        for rank in range(12, -1, -1):
+
+            if flush_value & (1 << rank):
+                kickers.append(rank)
+
+                if len(kickers) == 5:
+                    break
+        return 6, *kickers
+
+    if straight:
+        return 5, StraightScore(rank_mask)
+
+    if trip_mask.bit_count() == 1: # Trips
+        trips = trip_mask.bit_length() - 1
+        high_mask &= ~(1 << trips)
+        kick1 = high_mask.bit_length() - 1
+        high_mask &= ~(1 << kick1)
+        kick2 = high_mask.bit_length() - 1
+        return 4, trips, kick1, kick2
+
+    if pair_mask.bit_count() >= 2: # Two Pair
+        pair1 = pair_mask.bit_length() - 1
+        pair_mask &= ~(1 << pair1)
+        pair2 = pair_mask.bit_length() - 1
+        high_mask &= ~(1 << pair1)
+        high_mask &= ~(1 << pair2)
+        kick = high_mask.bit_length() - 1
+        return 3, pair1, pair2, kick
+
+    if pair_mask.bit_count() == 1: # Pair
+        pair = pair_mask.bit_length() - 1
+        high_mask &= ~(1 << pair)
+        kick1 = high_mask.bit_length() - 1
+        high_mask &= ~(1 << kick1)
+        kick2 = high_mask.bit_length() - 1
+        high_mask &= ~(1 << kick2)
+        kick3 = high_mask.bit_length() - 1
+        return 2, pair, kick1, kick2, kick3
+
+    high1 = high_mask.bit_length() - 1
+    high_mask &= ~(1 << high1)
+    high2 = high_mask.bit_length() - 1
+    high_mask &= ~(1 << high2)
+    high3 = high_mask.bit_length() - 1
+    high_mask &= ~(1 << high3)
+    high4 = high_mask.bit_length() - 1
+    high_mask &= ~(1 << high4)
+    high5 = high_mask.bit_length() - 1
+    return 1, high1, high2, high3, high4, high5
+
