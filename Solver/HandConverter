@@ -1,0 +1,38 @@
+Ranks = {
+    "2" : 0,
+    "3" : 1,
+    "4" : 2,
+    "5" : 3,
+    "6" : 4,
+    "7" : 5,
+    "8" : 6,
+    "9" : 7,
+    "T" : 8,
+    "J" : 9,
+    "Q" : 10,
+    "K" : 11,
+    "A" : 12,
+}
+
+Suits = {
+    "s": 0,
+    "h": 1,
+    "d": 2,
+    "c": 3,
+}
+
+def HandConverter(Hand = str):
+    hlen = len(Hand)
+    IntHand = [0]*(hlen//2)
+    i=0
+    while i < hlen:
+        temp = Hand[i]
+        if i % 2 == 0:
+            temp_int = Ranks[temp]
+        elif i % 2 == 1:
+            IntHand[i//2] = temp_int + (13*Suits[temp])
+        i+=1
+
+    return IntHand
+
+
