@@ -1,0 +1,44 @@
+import random
+from HandEvaluator import EvaluateHandHE
+
+def MonteCarlo(Players, S, Board = []):
+    Dead = [a for player in Players for a in player] + Board
+    Missing = 5 - len(Board)
+
+    Hands = len(Players)
+
+    Deck = [c for c in range(52) if c not in Dead]
+    Deck_Length = len(Deck)
+
+    wins = [0] * Hands
+
+    i = 0
+    while i <= S:
+        runout_list = random.sample(range(0, Deck_Length), Missing)
+        Full_Board = [Deck[a] for a in runout_list] + Board
+
+        score = [0]*Hands
+        j=0
+        for player in Players:
+            score[j] = EvaluateHandHE(player, Full_Board)
+            j+=1
+
+        Best = max(score)
+        winners = [a for a in range(Hands) if score[a] == Best]
+
+        for winner in winners:
+            wins[winner] += 1
+
+        i+=1
+
+    k=0
+    for win in wins:
+        wins[k] = win/i
+        k+=1
+
+
+    return wins
+
+print(MonteCarlo([[10,11],[0,13],[38,26],[51,39]], 10000))
+
+
