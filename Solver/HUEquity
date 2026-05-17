@@ -1,0 +1,33 @@
+# This will be an equity calculator to start lets make it calculate win % using all exact combos of hands.
+from itertools import combinations
+from HandEvaluator import EvaluateHandHE
+from Fundamentals import getCard
+
+def HUEquityCalc(Hero, Villain, Board = []):
+    Dead = Hero + Villain + Board
+    Missing = 5 - len(Board)
+
+    Deck = [c for c in range(52) if c not in Dead]
+
+    Hero_Wins = 0
+    Villain_Wins = 0
+    Chop = 0
+    Total = 0
+
+    for runout in combinations(Deck, Missing):
+        Full_Board = Board + list(runout)
+
+        hw = EvaluateHandHE(Hero, Full_Board)
+        vw = EvaluateHandHE(Villain, Full_Board)
+
+        if hw > vw:
+            Hero_Wins += 1
+        elif vw > hw:
+            Villain_Wins += 1
+        elif hw == vw:
+            Chop += 1
+        Total += 1
+
+    return (Hero_Wins + Chop)/Total, (Villain_Wins + Chop)/Total
+
+
