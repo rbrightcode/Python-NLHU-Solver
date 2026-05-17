@@ -1,7 +1,9 @@
 # We Will build two evaluators, One for Hold'em which can take in 7 cards and makes the best combo of 5
 # The second evaluator will be for PLO which will take in anywhere from 9-11 Cards and make the best combo
 # of 5 While explicitly using 3 Community Cards
-def StraightCheck(ranks):
+
+
+def StraightCheck(ranks): # This function will check if a group of 7 cards can make a straight.
     rank = ranks << 1
     if rank & 1<<13: # Check for the wheel possibilities
         rank |= 1
@@ -11,7 +13,7 @@ def StraightCheck(ranks):
         run &= (run>>1)
     return run != 0
 
-def StraightScore(ranks):
+def StraightScore(ranks): # This funcion will score the straight based on its highest card similar to the above function
     rank = ranks << 1
     if rank & (1 << 13):
         rank |= 1
@@ -45,7 +47,7 @@ def EvaluateHandHE(Cards, Board):
     pair_mask = 0
     high_mask = 0
 
-    for r in range(13):
+    for r in range(13): # Make a frequency table, to get the frequency with which we have each card in our hand then add those frequencies to bit masks accordingly
         f = freq[r]
         if f == 4:
             quad_mask |= 1 << r
