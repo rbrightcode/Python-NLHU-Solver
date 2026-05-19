@@ -1,0 +1,116 @@
+from HandConverter import *
+
+Ranks = {
+    "2" : 0,
+    "3" : 1,
+    "4" : 2,
+    "5" : 3,
+    "6" : 4,
+    "7" : 5,
+    "8" : 6,
+    "9" : 7,
+    "T" : 8,
+    "J" : 9,
+    "Q" : 10,
+    "K" : 11,
+    "A" : 12
+}
+
+def RangeParser(Combo):
+
+    Combos = []
+
+    for combo in Combo:
+        n = Ranks[combo[0]]
+        m = Ranks[combo[1]]
+
+        Suit = False
+        if len(combo) > 2:
+            if combo[2] == "s":
+                Suit = True
+
+        Pair = False
+        if n == m:
+            Pair = True
+
+        Bonus = False
+        if combo[-1] == "+":
+            Bonus = True
+
+        if not Bonus and not Pair and not Suit:
+            i = 0
+            while i < 4:
+                j = 0
+                while j < 4:
+                    if j == i:
+                        j += 1
+                        continue
+                    temp_combo = (n+i*13, m+j*13)
+                    Combos.append(temp_combo)
+                    j += 1
+                i += 1
+
+        elif not Bonus and not Pair:
+            i = 0
+            while i < 4:
+                temp_combo = (n+i*13, m+i*13)
+                Combos.append(temp_combo)
+                i += 1
+
+        elif not Bonus:
+            i = 0
+            while i < 4:
+                j = i + 1
+                while j < 4:
+                    temp_combo = (n+i*13, n+j*13)
+                    Combos.append(temp_combo)
+                    j+=1
+                i+=1
+
+        elif Bonus and not Suit and not Pair:
+            while n > m:
+                i = 0
+                while i < 4:
+                    j = 0
+                    while j < 4:
+                        if j == i:
+                            j += 1
+                            continue
+                        temp_combo = (n+i*13, m+j*13)
+                        Combos.append(temp_combo)
+                        j += 1
+                    i += 1
+                m += 1
+
+        elif Bonus and Suit:
+            while n > m:
+                i = 0
+                while i < 4:
+                    temp_combo = (n+i*13, m+i*13)
+                    Combos.append(temp_combo)
+                    i += 1
+                m += 1
+
+        elif Bonus and Pair:
+            while n < 13:
+                i = 0
+                while i < 4:
+                    j = i + 1
+                    while j < 4:
+                        temp_combo = (n+i*13, n+j*13)
+                        Combos.append(temp_combo)
+                        j += 1
+                    i+=1
+                n+=1
+    return Combos
+
+def Blocked(Combos, Blockers): # This only takes in bit masks.
+    New_Combos = [combo for combo in Combos if combo.bit_count() != (combo & ~Blockers).bit_count()]
+    return New_Combos
+
+Range = RangeParser(("A2s+",))
+Combos = [HandToCombo(hand) for hand in Range]
+New_Combos = Blocked(Combos, HandToCombo((12,25)))
+Str_Combos = [HandToStr(ComboToHand(combo)) for combo in New_Combos]
+print(HandToCombo((12,25)))
+print(Str_Combos)
