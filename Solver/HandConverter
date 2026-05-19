@@ -21,18 +21,52 @@ Suits = {
     "c": 3,
 }
 
-def HandConverter(Hand = str):
-    hlen = len(Hand)
-    IntHand = [0]*(hlen//2)
-    i=0
-    while i < hlen:
-        temp = Hand[i]
-        if i % 2 == 0:
-            temp_int = Ranks[temp]
-        elif i % 2 == 1:
-            IntHand[i//2] = temp_int + (13*Suits[temp])
-        i+=1
+Ranks2 = {
+    0 : "2",
+    1 : "3",
+    2 : "4",
+    3 : "5",
+    4 : "6",
+    5 : "7",
+    6 : "8",
+    7 : "9",
+    8 : "T",
+    9 : "J",
+    10 : "Q",
+    11 : "K",
+    12 : "A"
+}
 
-    return IntHand
+Suits2 = {
+    0 : "s",
+    1 : "h",
+    2 : "d",
+    3 : "c",
+}
 
+def HandToInt(Hand = tuple):
+    IntHand = []
+    for card in Hand:
+        IntHand.append(Ranks[card[0]]+13*Suits[card[1]])
+
+    return tuple(IntHand)
+
+def HandToCombo(Hand = tuple):
+    Bit_Mask = 0
+    for Card in Hand:
+        Bit_Mask |= 1 << Card
+
+    return Bit_Mask
+
+def ComboToHand(Combo = int):
+    Card1 = Combo.bit_length() - 1
+    Combo &= ~(1 << Card1)
+    Card2 = Combo.bit_length() - 1
+    return Card1, Card2
+
+def HandToStr(Hand = tuple):
+    StrHand = []
+    for card in Hand:
+        StrHand.append(Ranks2[card%13]+Suits2[card//13])
+    return tuple(StrHand)
 
