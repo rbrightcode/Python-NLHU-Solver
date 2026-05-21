@@ -1,0 +1,318 @@
+i =- 1
+
+primes = [2,3,5,7,11,13,17,19,23,29,31,37,41]
+
+HighCard = {}
+bit_old = 0
+a = 6
+while a < 13:
+    b = 5
+    while b < a:
+        c = 4
+        while c < b:
+            d = 3
+            while d < c:
+                e = 2
+                while e < d:
+                    f = 1
+                    while f < e:
+                        g = 0
+                        while g < f:
+                            if a - e != 4 and b - f != 4 and c - g != 4 and not (a == 12 and b == 3 and c == 2 and d == 1 and e == 0):
+                                bit_eff = primes[a]*primes[b]*primes[c]*primes[d]*primes[e]
+                                if bit_eff != bit_old:
+                                    i+=1
+                                    bit_old = bit_eff
+                                bit = primes[a]*primes[b]*primes[c]*primes[d]*primes[e]*primes[f]*primes[g]
+                                HighCard.update({bit : i})
+                            g += 1
+                        f += 1
+                    e += 1
+                d += 1
+            c += 1
+        b += 1
+    a += 1
+
+Pair = {}
+bit_old = 0
+a = 0
+while a < 13:
+    b = 4
+    while b < 13:
+        c = 3
+        while c < b:
+            d = 2
+            while d < c:
+                e = 1
+                while e < d:
+                    f = 0
+                    while f < e:
+                        rank = 0
+                        rank |= 1 << a | 1 << b | 1 << c | 1 << d | 1 << e | 1 << f
+                        rank << 1
+                        if rank & (1 << 13):
+                            rank |= 1
+                        for _ in range(4):
+                            rank &= (rank >> 1)
+                        if not rank:
+                            if a != b and a != c and a != d and a != e and a != f:
+                                bit_eff = (primes[a]**2)*primes[b]*primes[c]*primes[d]*primes[e]
+                                if bit_eff != bit_old:
+                                    i+=1
+                                    bit_old = bit_eff
+                                bit = (primes[a]**2)*primes[b]*primes[c]*primes[d]*primes[e]*primes[f]
+                                Pair.update({bit : i})
+                        f += 1
+                    e += 1
+                d += 1
+            c += 1
+        b += 1
+    a += 1
+
+TwoPair = {}
+bit_old = 0
+a = 1
+while a < 13:
+    b = 0
+    while b < a:
+        c = 0
+        while c < 13:
+            d = 0
+            while d <= c:
+                e = 0
+                while e < 13:
+                    rank = 0
+                    rank |= 1 << a | 1 << b | 1 << c | 1 << d | 1 << e
+                    rank << 1
+                    if rank & (1 << 13):
+                        rank |= 1
+                    for _ in range(4):
+                        rank &= (rank >> 1)
+                    if not rank:
+                        if a != c and a != d and a != e and b != c and b != d and b != e and e != c and e != d and not (c == d and c > b):
+                            bit_eff = (primes[a]**2)*(primes[b]**2)*primes[max([c,e])]
+                            if bit_eff != bit_old:
+                                i+=1
+                                bit_old = bit_eff
+                            bit = (primes[a]**2)*(primes[b]**2)*primes[c]*primes[d]*primes[e]
+                            TwoPair.update({bit : i})
+                    e += 1
+                d += 1
+            c += 1
+        b += 1
+    a += 1
+
+Trips = {}
+bit_old = 0
+a = 0
+while a < 13:
+    b = 3
+    while b < 13:
+        c = 2
+        while c < b:
+            d = 1
+            while d < c:
+                e = 0
+                while e < d:
+                    rank = 0
+                    rank |= 1 << a | 1 << b | 1 << c | 1 << d | 1 << e
+                    rank << 1
+                    if rank & (1 << 13):
+                        rank |= 1
+                    for _ in range(4):
+                        rank &= (rank >> 1)
+                    if not rank:
+                        if a != b and a != c and a != d and a != e:
+                            bit_eff = (primes[a]**3)*primes[b]*primes[c]
+                            if bit_eff != bit_old:
+                                i+=1
+                                bit_old = bit_eff
+                            bit = (primes[a]**3)*primes[b]*primes[c]*primes[d]*primes[e]
+                            Trips.update({bit : i})
+                    e += 1
+                d += 1
+            c += 1
+        b += 1
+    a += 1
+
+Straight = {}
+bit_old = 0
+# Start with the low Straight
+a = 0
+i+=1
+while a < 13:
+    b = 0
+    while b < 13:
+        bit_eff = primes[12]*primes[3]*primes[2]*primes[1]*primes[0]
+        bit = bit_eff*primes[a]*primes[b]
+        if a != 4 and b != 4:
+            Straight.update({bit : i})
+        b += 1
+    a+=1
+
+#Now for all other straights
+a = 4
+bit_old = 0
+while a < 13:
+    b = 3
+    while b < a:
+        c = 2
+        while c < b:
+            d = 1
+            while d < c:
+                e = 0
+                while e < d:
+                    f = 0
+                    while f < 13:
+                        g = 0
+                        while g < 13:
+                            if a - e == 4 and f != a+1 and g != a+1:
+                                bit_eff = primes[a]*primes[b]*primes[c]*primes[d]*primes[e]
+                                if bit_old != bit_eff:
+                                    bit_old = bit_eff
+                                    i+=1
+                                bit = bit_eff*primes[f]*primes[g]
+                                Straight.update({bit : i})
+                            g+=1
+                        f+=1
+                    e+=1
+                d+=1
+            c+=1
+        b+=1
+    a+=1
+
+primes_flush = [1,2,3,5,7,11,13,17,19,23,29,31,37,41]
+
+Flush = {}
+bit_old = 0
+a = 5
+while a < 14:
+    b = 4
+    while b < a:
+        c = 3
+        while c < b:
+            d = 2
+            while d < c:
+                e = 1
+                while e < d:
+                    f = 0
+                    while f < e:
+                        g = 0
+                        while g <= f:
+                            if a - e != 4 and not (b - f == 4 and f!= 0) and not (c - g == 4 and g != 0) and not (a == 13 and b == 4 and c == 3 and d == 2 and e == 1) and not (f == g and f != 0):
+                                bit_eff = primes_flush[a]*primes_flush[b]*primes_flush[c]*primes_flush[d]*primes_flush[e]
+                                if bit_eff != bit_old:
+                                    i+=1
+                                    bit_old = bit_eff
+                                bit = bit_eff*primes_flush[f]*primes_flush[g]
+                                Flush.update({bit : i})
+                            g += 1
+                        f += 1
+                    e += 1
+                d += 1
+            c += 1
+        b += 1
+    a += 1
+
+FullHouse = {}
+bit_old = 0
+a = 0
+while a < 13:
+    b = 0
+    while b < 13:
+        c = 0
+        while c < 13:
+            d = 0
+            while d < 13:
+                if a != b and a != c and a != d and not (b > a and (b == c or b == d)) and  not (c == d and c > b):
+                    bit_eff = (primes[a]**3)*(primes[b]**2)
+                    if bit_eff != bit_old:
+                        i+=1
+                        bit_old = bit_eff
+                    bit = bit_eff*primes[c]*primes[d]
+                    FullHouse.update({bit : i})
+                d += 1
+            c += 1
+        b += 1
+    a += 1
+
+
+Quads = {}
+bit_old = 0
+a = 0
+while a < 13:
+    b = 0
+    while b < 13:
+        c = 0
+        while c <= b:
+            d = 0
+            while d <= c:
+                if a != b and a != c and a != d:
+                    bit_eff = (primes[a]**4)*primes[b]
+                    if bit_eff != bit_old:
+                        i+=1
+                        bit_old = bit_eff
+                    bit = bit_eff*primes[c]*primes[d]
+                    Quads.update({bit : i})
+                d += 1
+            c += 1
+        b += 1
+    a += 1
+
+StraightFlush = {}
+bit_old = 0
+# Start with the low Straight
+a = 0
+i+=1
+while a < 14:
+    b = 0
+    while b <= a:
+        bit_eff = primes_flush[13]*primes_flush[4]*primes_flush[3]*primes_flush[2]*primes_flush[1]
+        bit = bit_eff*primes_flush[a]*primes_flush[b]
+        if a != 1 and a != 2 and a != 3 and a != 4 and a != 5 and a != 13 and b != 1 and b != 2 and b != 3 and b != 4 and b != 5 and b != 13 and not (a == b and a != 0):
+            StraightFlush.update({bit : i})
+        b += 1
+    a+=1
+
+#Now for all other straights
+a = 5
+bit_old = 0
+while a < 14:
+    b = 4
+    while b < a:
+        c = 3
+        while c < b:
+            d = 2
+            while d < c:
+                e = 1
+                while e < d:
+                    f = 0
+                    while f < 14:
+                        g = 0
+                        while g <= f:
+                            if a - e == 4 and f != a+1 and g != a+1 and not (f == g and f != 0):
+                                bit_eff = primes_flush[a]*primes_flush[b]*primes_flush[c]*primes_flush[d]*primes_flush[e]
+                                if bit_old != bit_eff:
+                                    bit_old = bit_eff
+                                    i+=1
+                                bit = bit_eff*primes_flush[f]*primes_flush[g]
+                                StraightFlush.update({bit : i})
+                            g+=1
+                        f+=1
+                    e+=1
+                d+=1
+            c+=1
+        b+=1
+    a+=1
+
+All_Hands = {}
+All_Hands.update(HighCard)
+All_Hands.update(Pair)
+All_Hands.update(TwoPair)
+All_Hands.update(Trips)
+All_Hands.update(Straight)
+All_Hands.update(FullHouse)
+All_Hands.update(Quads)
+Flush_Hands = {}
+Flush_Hands.update(Flush)
+Flush_Hands.update(StraightFlush)
