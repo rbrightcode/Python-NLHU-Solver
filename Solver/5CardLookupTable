@@ -1,0 +1,172 @@
+HighCard = {}
+a = 5
+i=0
+while a < 13:
+    b = 3
+    while b < a:
+        c = 2
+        while c < b:
+            d = 1
+            while d < c:
+                e = 0
+                while e < d:
+                    if a - e != 4 and not (a == 12 and b == 3 and c == 2 and d == 1 and e == 0):
+                        bit = 1 << (a*3) | 1 << (b*3) | 1 << (c*3) | 1 << (d*3) | 1 << (e*3)
+                        HighCard.update({bit : i})
+                        i += 1
+                    e += 1
+                d += 1
+            c += 1
+        b += 1
+    a += 1
+
+Pair = {}
+a = 0
+while a < 13:
+    b = 2
+    while b < 13:
+        c = 1
+        while c < b:
+            d = 0
+            while d < c:
+                if a != b and a != c and a != d:
+                    bit = 2 << (a*3)| 1 << (b*3) | 1 << (c*3) | 1 << (d*3)
+                    Pair.update({bit : i})
+                    i +=1
+                d +=1
+            c += 1
+        b += 1
+    a += 1
+
+TwoPair = {}
+a = 1
+while a < 13:
+    b = 0
+    while b < a:
+        c = 0
+        while c < 13:
+            if a != c and b != c:
+                bit = 2 << (a*3) | 2 << (b*3) | 1 << (c*3)
+                TwoPair.update({bit : i})
+                i += 1
+            c += 1
+        b += 1
+    a += 1
+
+Trips = {}
+a = 0
+while a < 13:
+    b = 1
+    while b < 13:
+        c = 0
+        while c < b:
+            if a != b and a != c:
+                bit = 3 << (a*3) | 1 << (b*3) | 1 << (c*3)
+                Trips.update({bit : i})
+                i += 1
+            c += 1
+        b += 1
+    a += 1
+
+Straight = {}
+a = 4
+Straight.update({1 << 36 | 1 << 9 | 1 << 6 | 1 << 3 | 1 << 0 : i})
+i += 1
+while a < 13:
+    b = 3
+    while b < a:
+        c = 2
+        while c < b:
+            d = 1
+            while d < c:
+                e = 0
+                while e < d:
+                    if a - e == 4:
+                        bit = 1 << (a*3) | 1 << (b*3) | 1 << (c*3) | 1 << (d*3) | 1 << (e*3)
+                        Straight.update({bit : i})
+                        i += 1
+                    e += 1
+                d += 1
+            c += 1
+        b += 1
+    a += 1
+
+Flush = {}
+a = 5
+while a < 13:
+    b = 3
+    while b < a:
+        c = 2
+        while c < b:
+            d = 1
+            while d < c:
+                e = 0
+                while e < d:
+                    if a - e != 4 and not (a == 12 and b == 3 and c == 2 and d == 1 and e == 0):
+                        bit = 1 << (a*3) | 1 << (b*3) | 1 << (c*3) | 1 << (d*3) | 1 << (e*3)
+                        Flush.update({bit : i})
+                        i += 1
+                    e += 1
+                d += 1
+            c += 1
+        b += 1
+    a += 1
+
+FullHouse = {}
+a = 0
+while a < 13:
+    b = 0
+    while b < 13:
+        if a != b:
+            bit = 3 << (a*3) | 2 << (b*3)
+            FullHouse.update({bit : i})
+            i +=1
+        b += 1
+    a += 1
+
+Quads = {}
+a = 0
+while a < 13:
+    b = 0
+    while b < 13:
+        if a != b:
+            bit = 4 << (a*3) | 1 << (b*3)
+            Quads.update({bit : i})
+            i +=1
+        b += 1
+    a += 1
+
+StraightFlush = {}
+StraightFlush.update({1 << 36 | 1 << 9 | 1 << 6 | 1 << 3 | 1 << 0 : i})
+i += 1
+a = 4
+while a < 13:
+    b = 3
+    while b < a:
+        c = 2
+        while c < b:
+            d = 1
+            while d < c:
+                e = 0
+                while e < d:
+                    if a - e == 4:
+                        bit = 1 << (a*3) | 1 << (b*3) | 1 << (c*3) | 1 << (d*3) | 1 << (e*3)
+                        StraightFlush.update({bit : i})
+                        i += 1
+                    e += 1
+                d += 1
+            c += 1
+        b += 1
+    a += 1
+
+All_Hands = {}
+All_Hands.update(HighCard)
+All_Hands.update(Pair)
+All_Hands.update(TwoPair)
+All_Hands.update(Trips)
+All_Hands.update(Straight)
+All_Hands.update(FullHouse)
+All_Hands.update(Quads)
+Flush_Hands = {}
+Flush_Hands.update(Flush)
+Flush_Hands.update(StraightFlush)
